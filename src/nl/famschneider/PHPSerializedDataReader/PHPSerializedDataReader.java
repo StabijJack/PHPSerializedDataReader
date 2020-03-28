@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class PHPSerializedDataReader {
     private Integer pointer;
-    private StringBuilder phpArraySerial;
-    private Map<String, Object> fieldMap;
+    private final StringBuilder phpArraySerial;
+    private final Map<String, Object> fieldMap;
 
     public PHPSerializedDataReader(String phpArraySerial) {
         this.pointer = 0;
@@ -33,7 +33,6 @@ public class PHPSerializedDataReader {
         } catch (PHPSerializedDataReaderExeption e) {
             return false;
         }
-        ;
         return true;
     }
 
@@ -136,7 +135,8 @@ public class PHPSerializedDataReader {
     }
 
     private Map<String, Object> getOptionArray(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
-        if (isOptionArray(option, fieldMap)) return (Map<String, Object>) getOption(option, fieldMap);
+        if (isOptionArray(option, fieldMap)) //noinspection unchecked
+            return (Map<String, Object>) getOption(option, fieldMap);
         throw new PHPSerializedDataReaderExeption("Is not an array");
     }
 
@@ -149,7 +149,7 @@ public class PHPSerializedDataReader {
     }
 
     private boolean optionExists(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
-        if (fieldMap.containsKey(option) == false) {
+        if (!fieldMap.containsKey(option)) {
             throw new PHPSerializedDataReaderExeption("Option does not exist");
         }
         return true;
@@ -241,11 +241,7 @@ public class PHPSerializedDataReader {
     private Boolean getBooleanData() {
         pointer++;//skip :
         Boolean booleanData;
-        if (phpArraySerial.charAt(pointer) == '0') {
-            booleanData = false;
-        } else {
-            booleanData = true;
-        }
+        booleanData = phpArraySerial.charAt(pointer) != '0';
         pointer++;
         pointer++; //skip ;
         return booleanData;
