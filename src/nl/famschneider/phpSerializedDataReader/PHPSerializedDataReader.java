@@ -8,7 +8,7 @@ public class PHPSerializedDataReader {
     private final Map<String, Object> fieldMap;
     private Integer pointer;
 
-    public PHPSerializedDataReader(String phpArraySerial) {
+    public PHPSerializedDataReader(String phpArraySerial) throws PHPSerializedDataReaderException {
         this.pointer = 0;
         this.phpArraySerial = new StringBuilder(phpArraySerial);
         this.fieldMap = new HashMap<>();
@@ -37,6 +37,7 @@ public class PHPSerializedDataReader {
     }
 
     public boolean isOption(String[] options) {
+        if (arrayWithOneElement(options))return isOption(options[0]);
         try {
             return isOption(options[options.length - 1], getArray(options));
         } catch (PHPSerializedDataReaderException e) {
@@ -53,6 +54,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionString(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return isOptionString(options[0]);
         return isOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -61,11 +63,26 @@ public class PHPSerializedDataReader {
         return getOption(option).getClass() == String.class;
     }
 
+    public Boolean isOptionInteger(String option) throws PHPSerializedDataReaderException {
+        return isOptionInteger(option, fieldMap);
+    }
+
+    public Boolean isOptionInteger(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return isOptionInteger(options[0]);
+        return isOptionString(options[options.length - 1], getArray(options));
+    }
+
+    private Boolean isOptionInteger(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
+        optionExists(option, fieldMap);
+        return getOption(option).getClass() == Integer.class;
+    }
+
     public Boolean isOptionBoolean(String option) throws PHPSerializedDataReaderException {
         return isOptionBoolean(option, fieldMap);
     }
 
     public Boolean isOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return isOptionBoolean(options[0]);
         return isOptionBoolean(options[options.length - 1], getArray(options));
     }
 
@@ -79,6 +96,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionArray(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return isOptionArray(options[0]);
         return isOptionArray(options[options.length - 1], getArray(options));
     }
 
@@ -92,6 +110,7 @@ public class PHPSerializedDataReader {
     }
 
     public Object getOption(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOption(options[0]);
         return getOption(options[options.length - 1], getArray(options));
     }
 
@@ -105,6 +124,7 @@ public class PHPSerializedDataReader {
     }
 
     public String getOptionString(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOptionString(options[0]);
         return getOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -118,6 +138,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean getOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOptionBoolean(options[0]);
         return getOptionBoolean(options[options.length - 1], getArray(options));
     }
 
@@ -131,6 +152,7 @@ public class PHPSerializedDataReader {
     }
 
     public Map<String, Object> getOptionArray(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOptionArray(options[0]);
         return getOptionArray(options[options.length - 1], getArray(options));
     }
 
@@ -160,7 +182,7 @@ public class PHPSerializedDataReader {
         return true;
     }
 
-    private void fillArrayFieldStructure() {
+    private void fillArrayFieldStructure() throws PHPSerializedDataReaderException {
         pointer = 0;
         pointer++;//skip a
         pointer++; //skip :
@@ -170,24 +192,13 @@ public class PHPSerializedDataReader {
         pointer++; //skip :
         pointer++; //skip {
         while (phpArraySerial.charAt(pointer) != '}') {
-            pointer++;//skip s fieldName identifier
-            String fieldName = getStringData();
-            //start value field
-            char type = phpArraySerial.charAt(pointer);
-            pointer++; //skip value identifier
-            if (type == 's') {
-                fieldMap.put(fieldName, getStringData());
-            } else if (type == 'b') {
-                fieldMap.put(fieldName, getBooleanData());
-            } else if (type == 'a') {
-                fieldMap.put(fieldName, getArrayData());
-            }
+            NameValuePair nameValuePair = handleSequenceOfFields();
+            fieldMap.put((String) nameValuePair.Name, nameValuePair.Value);
         }
     }
 
-    private Map<String, Object> getArrayData() {
+    private Map<String, Object> getArrayData() throws PHPSerializedDataReaderException {
         Map<String, Object> fieldNames = new HashMap<>();
-        String fieldName;
         pointer++; //skip :
         int arrayLength = Character.getNumericValue(phpArraySerial.charAt(pointer));
         pointer++;
@@ -203,17 +214,8 @@ public class PHPSerializedDataReader {
         pointer++; //skip {
         int numberFields = 0;
         while (numberFields < arrayLength) {
-            pointer++; //skip s fieldName identifier
-            fieldName = getStringData();
-            char type = phpArraySerial.charAt(pointer);
-            pointer++; //skip value identifier
-            if (type == 's') {
-                fieldNames.put(fieldName, getStringData());
-            } else if (type == 'b') {
-                fieldNames.put(fieldName, getBooleanData());
-            } else if (type == 'a') {
-                fieldNames.put(fieldName, getArrayData());
-            }
+            NameValuePair nameValuePair = handleSequenceOfFields();
+            fieldNames.put((String) nameValuePair.Name, nameValuePair.Value);
             numberFields++;
         }
         pointer++;//skip }
@@ -250,6 +252,48 @@ public class PHPSerializedDataReader {
         return booleanData;
     }
 
+    private Integer getIntegerData() {
+        pointer++;//skip :
+        Integer integer = Character.getNumericValue(phpArraySerial.charAt(pointer));
+        pointer++;
+        while (phpArraySerial.charAt(pointer) != ';') {
+            integer = integer * 10 + Character.getNumericValue(phpArraySerial.charAt(pointer));
+            pointer++;
+        }
+        pointer++; //skip ;
+        return integer;
+    }
+
+    private NameValuePair handleSequenceOfFields() throws PHPSerializedDataReaderException {
+        pointer++; //skip s fieldName identifier
+        String fieldName = getStringData();
+        char type = phpArraySerial.charAt(pointer);
+        pointer++; //skip value identifier
+        if (type == 's') {
+            return new NameValuePair(fieldName, getStringData());
+        } else if (type == 'b') {
+            return new NameValuePair(fieldName, getBooleanData());
+        } else if (type == 'a') {
+            return new NameValuePair(fieldName, getArrayData());
+        } else if (type == 'i') {
+            return new NameValuePair(fieldName, getIntegerData());
+        }
+        throw new PHPSerializedDataReaderException("not implemented type: " + type);
+    }
+
+    private Boolean arrayWithOneElement(String[] options) {
+        return options.length == 1;
+    }
+}
+
+class NameValuePair {
+    Object Name;
+    Object Value;
+
+    public NameValuePair(Object name, Object value) {
+        Name = name;
+        Value = value;
+    }
 }
 
 

@@ -16,6 +16,7 @@ class PHPSerializedDataReaderTest {
     void setUp() {
         String s = "a:8:{" +
                 "s:16:\"from_email_field\";s:22:\"info@presentalkmaar.nl\";" +
+                "s:7:\"Integer\";i:55246;"+
                 "s:15:\"from_name_field\";s:15:\"Present Alkmaar\";" +
                 "s:13:\"smtp_settings\";a:8:{" +
                 "s:4:\"host\";s:14:\"presentmail.nl\";" +
@@ -34,7 +35,11 @@ class PHPSerializedDataReaderTest {
                 "s:19:\"enable_domain_check\";b:0;" +
                 "s:15:\"allowed_domains\";s:0:\"\";" +
                 "}";
-        phpSerializedDataReader = new PHPSerializedDataReader(s);
+        try {
+            phpSerializedDataReader = new PHPSerializedDataReader(s);
+        } catch (PHPSerializedDataReaderException e){
+            System.out.println( e.getMessage());
+        }
     }
 
     @Test
@@ -208,5 +213,27 @@ class PHPSerializedDataReaderTest {
         assertTrue(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host"}));
         // noinspection SpellCheckingInspection
         assertFalse(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host","piet"}));
+    }
+
+    @Test
+    void isOptionInteger() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionInteger("Present Alkmaar"));
+        try {
+            assertTrue(phpSerializedDataReader.isOptionInteger("Integer"));
+            assertFalse(phpSerializedDataReader.isOptionInteger("smtp_settings"));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+
+    }
+
+    @Test
+    void testIsOptionInteger() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionInteger(new String[]{"smtp_settings", " pietje"}));
+        try {
+            assertTrue(phpSerializedDataReader.isOptionInteger(new String[]{"Integer"}));
+            assertFalse(phpSerializedDataReader.isOptionInteger(new String[]{"smtp_settings", "force_from_name_replace"}));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+
     }
 }
