@@ -2,7 +2,7 @@
 DeSerialize PHPSerialized data to java Objects
 using definition on http://www.phpinternalsbook.com/php5/classes_objects/serialization.html 
 
- **the elements are ready**
+ these **elements** are ready
  
  these ~~elements~~ not usefull
 
