@@ -4,7 +4,7 @@ using definition on http://www.phpinternalsbook.com/php5/classes_objects/seriali
 
  these **elements** are ready
  
- these ~~elements~~ not usefull
+ these ~~elements~~ not useful
 
 NULL:         N;
 
@@ -24,7 +24,7 @@ NULL:         N;
 
 ~~Test Object with properties: O:4:"Test":3:{s:6:"public";i:1;s:12:"\0*\0protected";i:2;s:13:"\0Test\0private";i:3;}~~
 
-~~Test2 Object with hes own serialization methode C:5:"Test2":6:{foobar}~~
+~~Test2 Object with hes own serialization method C:5:"Test2":6:{foobar}~~
 
 ~~internal reference a:2:{i:0;s:3:"foo";i:1;R:2;}~~
 

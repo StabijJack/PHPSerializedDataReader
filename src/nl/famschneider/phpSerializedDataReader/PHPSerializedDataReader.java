@@ -254,7 +254,7 @@ public class PHPSerializedDataReader {
 
     private Integer getIntegerData() {
         pointer++;//skip :
-        Integer integer = Character.getNumericValue(phpArraySerial.charAt(pointer));
+        int integer = Character.getNumericValue(phpArraySerial.charAt(pointer));
         pointer++;
         while (phpArraySerial.charAt(pointer) != ';') {
             integer = integer * 10 + Character.getNumericValue(phpArraySerial.charAt(pointer));
@@ -287,8 +287,8 @@ public class PHPSerializedDataReader {
 }
 
 class NameValuePair {
-    Object Name;
-    Object Value;
+    final Object Name;
+    final Object Value;
 
     public NameValuePair(Object name, Object value) {
         Name = name;
