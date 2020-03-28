@@ -6,7 +6,7 @@ using definition on http://www.phpinternalsbook.com/php5/classes_objects/seriali
  
  these ~~elements~~ not useful
 
-NULL:         N;
+**NULL:         N;**
 
 **true:         b:1;**
 
@@ -14,7 +14,7 @@ NULL:         N;
 
 **42:           i:42;**
 
-42.3789:      d:42.378900000000002;
+**42.3789:      d:42.378900000000002;**
 
 **"foobar":     s:6:"foobar";**
 

@@ -90,6 +90,20 @@ public class PHPSerializedDataReader {
         return getOption(option).getClass() == Double.class;
     }
 
+    public Boolean isOptionNull(String option) throws PHPSerializedDataReaderException {
+        return isOptionNull(option, fieldMap);
+    }
+
+    public Boolean isOptionNull(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return isOptionNull(options[0]);
+        return isOptionString(options[options.length - 1], getArray(options));
+    }
+
+    private Boolean isOptionNull(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
+        optionExists(option, fieldMap);
+        return getOption(option) == null;
+    }
+
     public Boolean isOptionBoolean(String option) throws PHPSerializedDataReaderException {
         return isOptionBoolean(option, fieldMap);
     }
@@ -184,7 +198,7 @@ public class PHPSerializedDataReader {
     }
 
     private Integer getOptionInteger(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
-        if (isOptionString(option, fieldMap)) return (Integer) getOption(option, fieldMap);
+        if (isOptionInteger(option, fieldMap)) return (Integer) getOption(option, fieldMap);
         throw new PHPSerializedDataReaderException("Is not an Integer");
     }
 
@@ -198,11 +212,22 @@ public class PHPSerializedDataReader {
     }
 
     private Double getOptionDouble(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
-        if (isOptionString(option, fieldMap)) return (Double) getOption(option, fieldMap);
+        if (isOptionDouble(option, fieldMap)) return (Double) getOption(option, fieldMap);
         throw new PHPSerializedDataReaderException("Is not a Double");
     }
+    public Object getOptionNull(String option) throws PHPSerializedDataReaderException {
+        return getOptionNull(option, fieldMap);
+    }
 
+    public Object getOptionNull(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOptionNull(options[0]);
+        return getOptionNull(options[options.length - 1], getArray(options));
+    }
 
+    private Object getOptionNull(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
+        if (isOptionNull(option, fieldMap)) return getOption(option, fieldMap);
+        throw new PHPSerializedDataReaderException("Is not a Null");
+    }
 
 // --Commented out by Inspection START (28-3-2020 12:59):
 //    private boolean optionExists(String option) throws PHPSerializedDataReaderException {
@@ -294,6 +319,12 @@ public class PHPSerializedDataReader {
         return booleanData;
     }
 
+    @SuppressWarnings("SameReturnValue")
+    private Object getNullData() {
+        pointer++;//skip ;
+        return null;
+    }
+
     private Integer getIntegerData() {
         pointer++;//skip :
         int integer = Character.getNumericValue(phpArraySerial.charAt(pointer));
@@ -334,6 +365,8 @@ public class PHPSerializedDataReader {
             return new NameValuePair(fieldName, getIntegerData());
         } else if (type == 'd') {
             return new NameValuePair(fieldName, getDoubleData());
+        } else if (type == 'N') {
+            return new NameValuePair(fieldName, getNullData());
         }
         throw new PHPSerializedDataReaderException("not implemented type: " + type);
     }

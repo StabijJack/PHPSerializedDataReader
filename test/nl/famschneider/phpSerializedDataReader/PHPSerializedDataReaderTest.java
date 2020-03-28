@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings({"CatchMayIgnoreException","SpellCheckingInspection"})
+@SuppressWarnings({"CatchMayIgnoreException", "SpellCheckingInspection"})
 class PHPSerializedDataReaderTest {
     private PHPSerializedDataReader phpSerializedDataReader;
 
@@ -16,8 +16,9 @@ class PHPSerializedDataReaderTest {
     void setUp() {
         String s = "a:8:{" +
                 "s:16:\"from_email_field\";s:22:\"info@presentalkmaar.nl\";" +
-                "s:7:\"Integer\";i:55246;"+
-                "s:6:\"Double\";d:55.246;"+
+                "s:7:\"Integer\";i:55246;" +
+                "s:6:\"Double\";d:55.246;" +
+                "s:4:\"Null\";N;" +
                 "s:15:\"from_name_field\";s:15:\"Present Alkmaar\";" +
                 "s:13:\"smtp_settings\";a:8:{" +
                 "s:4:\"host\";s:14:\"presentmail.nl\";" +
@@ -38,8 +39,8 @@ class PHPSerializedDataReaderTest {
                 "}";
         try {
             phpSerializedDataReader = new PHPSerializedDataReader(s);
-        } catch (PHPSerializedDataReaderException e){
-            System.out.println( e.getMessage());
+        } catch (PHPSerializedDataReaderException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -204,8 +205,8 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testIsOption() {
-        assertTrue(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host"}));
-        assertFalse(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host","piet"}));
+        assertTrue(phpSerializedDataReader.isOption(new String[]{"smtp_settings", "host"}));
+        assertFalse(phpSerializedDataReader.isOption(new String[]{"smtp_settings", "host", "piet"}));
     }
 
     @Test
@@ -249,6 +250,7 @@ class PHPSerializedDataReaderTest {
         } catch (PHPSerializedDataReaderException e) {
         }
     }
+
     @Test
     void isOptionDouble() {
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionDouble("Present Alkmaar"));
@@ -287,6 +289,48 @@ class PHPSerializedDataReaderTest {
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionDouble(new String[]{"smtp_settings", "force_from_name_replace"}));
         try {
             assertEquals(55.246, phpSerializedDataReader.getOptionDouble(new String[]{"Double"}));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+    }
+
+    @Test
+    void isOptionNull() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionNull("Present Alkmaar"));
+        try {
+            assertTrue(phpSerializedDataReader.isOptionNull("Null"));
+            assertFalse(phpSerializedDataReader.isOptionNull("smtp_settings"));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+
+    }
+
+    @Test
+    void testIsOptionNull() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionNull(new String[]{"smtp_settings", " pietje"}));
+        try {
+            assertTrue(phpSerializedDataReader.isOptionNull(new String[]{"Null"}));
+            assertFalse(phpSerializedDataReader.isOptionNull(new String[]{"smtp_settings", "force_from_name_replace"}));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+
+    }
+
+    @Test
+    void getOptionNull() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionNull("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionNull("force_from_name_replace"));
+        try {
+            assertNull(phpSerializedDataReader.getOptionNull("Null"));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+    }
+
+    @Test
+    void testGetOptionNull() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionNull(new String[]{"smtp_settings", " pietje"}));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionNull(new String[]{"smtp_settings", "force_from_name_replace"}));
+        try {
+            assertNull(phpSerializedDataReader.getOptionNull(new String[]{"Null"}));
         } catch (PHPSerializedDataReaderException e) {
         }
     }
