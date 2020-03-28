@@ -37,7 +37,7 @@ public class PHPSerializedDataReader {
     }
 
     public boolean isOption(String[] options) {
-        if (arrayWithOneElement(options))return isOption(options[0]);
+        if (arrayWithOneElement(options)) return isOption(options[0]);
         try {
             return isOption(options[options.length - 1], getArray(options));
         } catch (PHPSerializedDataReaderException e) {
@@ -54,7 +54,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionString(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return isOptionString(options[0]);
+        if (arrayWithOneElement(options)) return isOptionString(options[0]);
         return isOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -68,7 +68,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionInteger(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return isOptionInteger(options[0]);
+        if (arrayWithOneElement(options)) return isOptionInteger(options[0]);
         return isOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -76,12 +76,13 @@ public class PHPSerializedDataReader {
         optionExists(option, fieldMap);
         return getOption(option).getClass() == Integer.class;
     }
+
     public Boolean isOptionDouble(String option) throws PHPSerializedDataReaderException {
         return isOptionDouble(option, fieldMap);
     }
 
     public Boolean isOptionDouble(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return isOptionDouble(options[0]);
+        if (arrayWithOneElement(options)) return isOptionDouble(options[0]);
         return isOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -95,7 +96,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionNull(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return isOptionNull(options[0]);
+        if (arrayWithOneElement(options)) return isOptionNull(options[0]);
         return isOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -109,7 +110,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return isOptionBoolean(options[0]);
+        if (arrayWithOneElement(options)) return isOptionBoolean(options[0]);
         return isOptionBoolean(options[options.length - 1], getArray(options));
     }
 
@@ -123,7 +124,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean isOptionArray(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return isOptionArray(options[0]);
+        if (arrayWithOneElement(options)) return isOptionArray(options[0]);
         return isOptionArray(options[options.length - 1], getArray(options));
     }
 
@@ -137,7 +138,7 @@ public class PHPSerializedDataReader {
     }
 
     public Object getOption(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOption(options[0]);
+        if (arrayWithOneElement(options)) return getOption(options[0]);
         return getOption(options[options.length - 1], getArray(options));
     }
 
@@ -151,7 +152,7 @@ public class PHPSerializedDataReader {
     }
 
     public String getOptionString(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOptionString(options[0]);
+        if (arrayWithOneElement(options)) return getOptionString(options[0]);
         return getOptionString(options[options.length - 1], getArray(options));
     }
 
@@ -165,7 +166,7 @@ public class PHPSerializedDataReader {
     }
 
     public Boolean getOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOptionBoolean(options[0]);
+        if (arrayWithOneElement(options)) return getOptionBoolean(options[0]);
         return getOptionBoolean(options[options.length - 1], getArray(options));
     }
 
@@ -179,7 +180,7 @@ public class PHPSerializedDataReader {
     }
 
     public Map<String, Object> getOptionArray(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOptionArray(options[0]);
+        if (arrayWithOneElement(options)) return getOptionArray(options[0]);
         return getOptionArray(options[options.length - 1], getArray(options));
     }
 
@@ -188,12 +189,13 @@ public class PHPSerializedDataReader {
             return (Map<String, Object>) getOption(option, fieldMap);
         throw new PHPSerializedDataReaderException("Is not an array");
     }
+
     public Integer getOptionInteger(String option) throws PHPSerializedDataReaderException {
         return getOptionInteger(option, fieldMap);
     }
 
     public Integer getOptionInteger(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOptionInteger(options[0]);
+        if (arrayWithOneElement(options)) return getOptionInteger(options[0]);
         return getOptionInteger(options[options.length - 1], getArray(options));
     }
 
@@ -207,7 +209,7 @@ public class PHPSerializedDataReader {
     }
 
     public Double getOptionDouble(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOptionDouble(options[0]);
+        if (arrayWithOneElement(options)) return getOptionDouble(options[0]);
         return getOptionDouble(options[options.length - 1], getArray(options));
     }
 
@@ -215,12 +217,13 @@ public class PHPSerializedDataReader {
         if (isOptionDouble(option, fieldMap)) return (Double) getOption(option, fieldMap);
         throw new PHPSerializedDataReaderException("Is not a Double");
     }
+
     public Object getOptionNull(String option) throws PHPSerializedDataReaderException {
         return getOptionNull(option, fieldMap);
     }
 
     public Object getOptionNull(String[] options) throws PHPSerializedDataReaderException {
-        if (arrayWithOneElement(options))return getOptionNull(options[0]);
+        if (arrayWithOneElement(options)) return getOptionNull(options[0]);
         return getOptionNull(options[options.length - 1], getArray(options));
     }
 
@@ -251,6 +254,7 @@ public class PHPSerializedDataReader {
 
     private void fillArrayFieldStructure() throws PHPSerializedDataReaderException {
         pointer = 0;
+        if (phpArraySerial.charAt(pointer) != 'a') throw new ExceptionInInitializerError("not an Array as Base Field");
         pointer++;//skip a
         pointer++; //skip :
         pointer++;//skip number
@@ -339,7 +343,7 @@ public class PHPSerializedDataReader {
 
     private Double getDoubleData() {
         pointer++;//skip :
-        StringBuilder stringBuilder= new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(phpArraySerial.charAt(pointer));
         pointer++;
         while (phpArraySerial.charAt(pointer) != ';') {
@@ -351,8 +355,14 @@ public class PHPSerializedDataReader {
     }
 
     private NameValuePair handleSequenceOfFields() throws PHPSerializedDataReaderException {
-        pointer++; //skip s fieldName identifier
-        String fieldName = getStringData();
+        String fieldName;
+        if (phpArraySerial.charAt(pointer) == 's') {
+            pointer++; //skip s fieldName identifier
+            fieldName = getStringData();
+        } else {
+            pointer++; //skip i fieldName identifier
+            fieldName = getIntegerData().toString();
+        }
         char type = phpArraySerial.charAt(pointer);
         pointer++; //skip value identifier
         if (type == 's') {
