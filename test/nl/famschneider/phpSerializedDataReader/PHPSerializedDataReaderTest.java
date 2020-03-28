@@ -17,6 +17,7 @@ class PHPSerializedDataReaderTest {
         String s = "a:8:{" +
                 "s:16:\"from_email_field\";s:22:\"info@presentalkmaar.nl\";" +
                 "s:7:\"Integer\";i:55246;"+
+                "s:6:\"Double\";d:55.246;"+
                 "s:15:\"from_name_field\";s:15:\"Present Alkmaar\";" +
                 "s:13:\"smtp_settings\";a:8:{" +
                 "s:4:\"host\";s:14:\"presentmail.nl\";" +
@@ -244,7 +245,48 @@ class PHPSerializedDataReaderTest {
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionInteger(new String[]{"smtp_settings", " pietje"}));
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionInteger(new String[]{"smtp_settings", "force_from_name_replace"}));
         try {
-            assertEquals("55246", phpSerializedDataReader.getOptionInteger(new String[]{"Integer"}));
+            assertEquals(55246, phpSerializedDataReader.getOptionInteger(new String[]{"Integer"}));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+    }
+    @Test
+    void isOptionDouble() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionDouble("Present Alkmaar"));
+        try {
+            assertTrue(phpSerializedDataReader.isOptionDouble("Double"));
+            assertFalse(phpSerializedDataReader.isOptionDouble("smtp_settings"));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+
+    }
+
+    @Test
+    void testIsOptionDouble() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionDouble(new String[]{"smtp_settings", " pietje"}));
+        try {
+            assertTrue(phpSerializedDataReader.isOptionDouble(new String[]{"Double"}));
+            assertFalse(phpSerializedDataReader.isOptionDouble(new String[]{"smtp_settings", "force_from_name_replace"}));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+
+    }
+
+    @Test
+    void getOptionDouble() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionDouble("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionDouble("force_from_name_replace"));
+        try {
+            assertEquals(55.246, phpSerializedDataReader.getOptionDouble("Double"));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+    }
+
+    @Test
+    void testGetOptionDouble() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionDouble(new String[]{"smtp_settings", " pietje"}));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionDouble(new String[]{"smtp_settings", "force_from_name_replace"}));
+        try {
+            assertEquals(55.246, phpSerializedDataReader.getOptionDouble(new String[]{"Double"}));
         } catch (PHPSerializedDataReaderException e) {
         }
     }

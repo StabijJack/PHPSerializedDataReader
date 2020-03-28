@@ -76,6 +76,19 @@ public class PHPSerializedDataReader {
         optionExists(option, fieldMap);
         return getOption(option).getClass() == Integer.class;
     }
+    public Boolean isOptionDouble(String option) throws PHPSerializedDataReaderException {
+        return isOptionDouble(option, fieldMap);
+    }
+
+    public Boolean isOptionDouble(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return isOptionDouble(options[0]);
+        return isOptionString(options[options.length - 1], getArray(options));
+    }
+
+    private Boolean isOptionDouble(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
+        optionExists(option, fieldMap);
+        return getOption(option).getClass() == Double.class;
+    }
 
     public Boolean isOptionBoolean(String option) throws PHPSerializedDataReaderException {
         return isOptionBoolean(option, fieldMap);
@@ -172,7 +185,21 @@ public class PHPSerializedDataReader {
 
     private Integer getOptionInteger(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         if (isOptionString(option, fieldMap)) return (Integer) getOption(option, fieldMap);
-        throw new PHPSerializedDataReaderException("Is not a String");
+        throw new PHPSerializedDataReaderException("Is not an Integer");
+    }
+
+    public Double getOptionDouble(String option) throws PHPSerializedDataReaderException {
+        return getOptionDouble(option, fieldMap);
+    }
+
+    public Double getOptionDouble(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOptionDouble(options[0]);
+        return getOptionDouble(options[options.length - 1], getArray(options));
+    }
+
+    private Double getOptionDouble(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
+        if (isOptionString(option, fieldMap)) return (Double) getOption(option, fieldMap);
+        throw new PHPSerializedDataReaderException("Is not a Double");
     }
 
 
@@ -279,6 +306,19 @@ public class PHPSerializedDataReader {
         return integer;
     }
 
+    private Double getDoubleData() {
+        pointer++;//skip :
+        StringBuilder stringBuilder= new StringBuilder();
+        stringBuilder.append(phpArraySerial.charAt(pointer));
+        pointer++;
+        while (phpArraySerial.charAt(pointer) != ';') {
+            stringBuilder.append(phpArraySerial.charAt(pointer));
+            pointer++;
+        }
+        pointer++; //skip ;
+        return Double.valueOf(stringBuilder.toString());
+    }
+
     private NameValuePair handleSequenceOfFields() throws PHPSerializedDataReaderException {
         pointer++; //skip s fieldName identifier
         String fieldName = getStringData();
@@ -292,6 +332,8 @@ public class PHPSerializedDataReader {
             return new NameValuePair(fieldName, getArrayData());
         } else if (type == 'i') {
             return new NameValuePair(fieldName, getIntegerData());
+        } else if (type == 'd') {
+            return new NameValuePair(fieldName, getDoubleData());
         }
         throw new PHPSerializedDataReaderException("not implemented type: " + type);
     }
