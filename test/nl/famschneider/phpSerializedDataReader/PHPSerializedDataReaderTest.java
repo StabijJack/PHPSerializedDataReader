@@ -1,4 +1,4 @@
-package nl.famschneider.PHPSerializedDataReader;
+package nl.famschneider.phpSerializedDataReader;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"CatchMayIgnoreException","SpellCheckingInspection"})
 class PHPSerializedDataReaderTest {
     private PHPSerializedDataReader phpSerializedDataReader;
 
@@ -44,147 +45,155 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void isOptionString() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.isOptionString("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionString("Present Alkmaar"));
         try {
             assertTrue(phpSerializedDataReader.isOptionString("from_name_field"));
             assertFalse(phpSerializedDataReader.isOptionString("smtp_settings"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void isOptionBoolean() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.isOptionBoolean("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionBoolean("Present Alkmaar"));
         try {
             assertTrue(phpSerializedDataReader.isOptionBoolean("force_from_name_replace"));
             assertFalse(phpSerializedDataReader.isOptionBoolean("smtp_settings"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void isOptionArray() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.isOptionArray("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionArray("Present Alkmaar"));
         try {
             assertFalse(phpSerializedDataReader.isOptionArray("force_from_name_replace"));
             assertTrue(phpSerializedDataReader.isOptionArray("smtp_settings"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void getOption() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOption("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOption("Present Alkmaar"));
         try {
             assertEquals("Present Alkmaar", phpSerializedDataReader.getOption("from_name_field"));
             assertFalse((Boolean) phpSerializedDataReader.getOption("force_from_name_replace"));
-            @SuppressWarnings("unchecked") Map<String, Object> array = (Map<String, Object>) phpSerializedDataReader.getOption("smtp_settings");
+            @SuppressWarnings({"unchecked", "SpellCheckingInspection"}) Map<String, Object> array = (Map<String, Object>) phpSerializedDataReader.getOption("smtp_settings");
             assertFalse((Boolean) array.get("encrypt_pass"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void getOptionString() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionString("Present Alkmaar"));
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionString("force_from_name_replace"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionString("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionString("force_from_name_replace"));
         try {
             assertEquals("Present Alkmaar", phpSerializedDataReader.getOptionString("from_name_field"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void getOptionBoolean() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionBoolean("Present Alkmaar"));
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionBoolean("from_name_field"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionBoolean("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionBoolean("from_name_field"));
         try {
             assertFalse(phpSerializedDataReader.getOptionBoolean("force_from_name_replace"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void getOptionArray() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionArray("Present Alkmaar"));
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionArray("from_name_field"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionArray("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionArray("from_name_field"));
         try {
-            Map<String, Object> temp = phpSerializedDataReader.getOptionArray("smtp_settings");
+            @SuppressWarnings("SpellCheckingInspection") Map<String, Object> temp = phpSerializedDataReader.getOptionArray("smtp_settings");
             assertEquals("presentmail.nl", temp.get("host"));
 
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testIsOptionString() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.isOptionString(new String[]{"smtp_settings", " pietje"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionString(new String[]{"smtp_settings", " pietje"}));
         try {
             assertTrue(phpSerializedDataReader.isOptionString(new String[]{"smtp_settings", "port"}));
             assertFalse(phpSerializedDataReader.isOptionString(new String[]{"smtp_settings", "force_from_name_replace"}));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testIsOptionBoolean() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.isOptionBoolean(new String[]{"smtp_settings", " pietje"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionBoolean(new String[]{"smtp_settings", " pietje"}));
         try {
             assertFalse(phpSerializedDataReader.isOptionBoolean(new String[]{"smtp_settings", "port"}));
             assertTrue(phpSerializedDataReader.isOptionBoolean(new String[]{"smtp_settings", "force_from_name_replace"}));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testIsOptionArray() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.isOptionArray(new String[]{"smtp_settings", " pietje"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionArray(new String[]{"smtp_settings", " pietje"}));
         try {
             assertTrue(phpSerializedDataReader.isOptionArray(new String[]{"smtp_settings", "secret"}));
             assertFalse(phpSerializedDataReader.isOptionArray(new String[]{"smtp_settings", "force_from_name_replace"}));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testGetOption() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOption(new String[]{"smtp_settings", " pietje"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOption(new String[]{"smtp_settings", " pietje"}));
         try {
+            // noinspection SpellCheckingInspection
             assertEquals("presentmail.nl", phpSerializedDataReader.getOption(new String[]{"smtp_settings", "host"}));
             assertFalse((Boolean) phpSerializedDataReader.getOption(new String[]{"smtp_settings", "force_from_name_replace"}));
-            @SuppressWarnings("unchecked") Map<String, Object> array = (Map<String, Object>) phpSerializedDataReader.getOption(new String[]{"smtp_settings", "host"});
+            @SuppressWarnings({"unchecked", "SpellCheckingInspection"}) Map<String, Object> array = (Map<String, Object>) phpSerializedDataReader.getOption(new String[]{"smtp_settings", "host"});
             assertFalse((Boolean) array.get("force_from_name_replace"));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testGetOptionString() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", " pietje"}));
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", "force_from_name_replace"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", " pietje"}));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", "force_from_name_replace"}));
         try {
             assertEquals("587", phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", "port"}));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testGetOptionBoolean() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", " pietje"}));
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", "port"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", " pietje"}));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", "port"}));
         try {
             assertTrue(phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", "force_from_name_replace"}));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
     @Test
     void testGetOptionArray() {
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", " pietje"}));
-        assertThrows(PHPSerializedDataReaderExeption.class, () -> phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", "port"}));
+        // noinspection SpellCheckingInspection
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", " pietje"}));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", "port"}));
         try {
-            assertTrue(phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", "host"}));
-        } catch (PHPSerializedDataReaderExeption e) {
+            assertTrue(phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", "host"}) instanceof HashMap);
+        } catch (PHPSerializedDataReaderException e) {
         }
     }
 
@@ -197,6 +206,7 @@ class PHPSerializedDataReaderTest {
     @Test
     void testIsOption() {
         assertTrue(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host"}));
+        // noinspection SpellCheckingInspection
         assertFalse(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host","piet"}));
     }
 }

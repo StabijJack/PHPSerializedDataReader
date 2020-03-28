@@ -1,12 +1,12 @@
-package nl.famschneider.PHPSerializedDataReader;
+package nl.famschneider.phpSerializedDataReader;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PHPSerializedDataReader {
-    private Integer pointer;
     private final StringBuilder phpArraySerial;
     private final Map<String, Object> fieldMap;
+    private Integer pointer;
 
     public PHPSerializedDataReader(String phpArraySerial) {
         this.pointer = 0;
@@ -19,7 +19,7 @@ public class PHPSerializedDataReader {
         return fieldMap;
     }
 
-    private Map<String, Object> getArray(String[] options) throws PHPSerializedDataReaderExeption {
+    private Map<String, Object> getArray(String[] options) throws PHPSerializedDataReaderException {
         Map<String, Object> fieldMap = this.fieldMap;
         for (int i = 0; i < options.length - 1; i++) {
             fieldMap = getOptionArray(options[i], fieldMap);
@@ -30,7 +30,7 @@ public class PHPSerializedDataReader {
     public boolean isOption(String option) {
         try {
             optionExists(option, fieldMap);
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
             return false;
         }
         return true;
@@ -39,125 +39,129 @@ public class PHPSerializedDataReader {
     public boolean isOption(String[] options) {
         try {
             return isOption(options[options.length - 1], getArray(options));
-        } catch (PHPSerializedDataReaderExeption e) {
+        } catch (PHPSerializedDataReaderException e) {
             return false;
         }
     }
 
-    private boolean isOption(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private boolean isOption(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         return optionExists(option, fieldMap);
     }
 
-    public Boolean isOptionString(String option) throws PHPSerializedDataReaderExeption {
+    public Boolean isOptionString(String option) throws PHPSerializedDataReaderException {
         return isOptionString(option, fieldMap);
     }
 
-    public Boolean isOptionString(String[] options) throws PHPSerializedDataReaderExeption {
+    public Boolean isOptionString(String[] options) throws PHPSerializedDataReaderException {
         return isOptionString(options[options.length - 1], getArray(options));
     }
 
-    private Boolean isOptionString(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private Boolean isOptionString(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         optionExists(option, fieldMap);
         return getOption(option).getClass() == String.class;
     }
 
-    public Boolean isOptionBoolean(String option) throws PHPSerializedDataReaderExeption {
+    public Boolean isOptionBoolean(String option) throws PHPSerializedDataReaderException {
         return isOptionBoolean(option, fieldMap);
     }
 
-    public Boolean isOptionBoolean(String[] options) throws PHPSerializedDataReaderExeption {
+    public Boolean isOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
         return isOptionBoolean(options[options.length - 1], getArray(options));
     }
 
-    private Boolean isOptionBoolean(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private Boolean isOptionBoolean(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         optionExists(option, fieldMap);
         return getOption(option, fieldMap).getClass() == Boolean.class;
     }
 
-    public Boolean isOptionArray(String option) throws PHPSerializedDataReaderExeption {
+    public Boolean isOptionArray(String option) throws PHPSerializedDataReaderException {
         return isOptionArray(option, fieldMap);
     }
 
-    public Boolean isOptionArray(String[] options) throws PHPSerializedDataReaderExeption {
+    public Boolean isOptionArray(String[] options) throws PHPSerializedDataReaderException {
         return isOptionArray(options[options.length - 1], getArray(options));
     }
 
-    private Boolean isOptionArray(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private Boolean isOptionArray(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         optionExists(option, fieldMap);
         return getOption(option, fieldMap).getClass() == HashMap.class;
     }
 
-    public Object getOption(String option) throws PHPSerializedDataReaderExeption {
+    public Object getOption(String option) throws PHPSerializedDataReaderException {
         return getOption(option, fieldMap);
     }
 
-    public Object getOption(String[] options) throws PHPSerializedDataReaderExeption {
+    public Object getOption(String[] options) throws PHPSerializedDataReaderException {
         return getOption(options[options.length - 1], getArray(options));
     }
 
-    private Object getOption(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private Object getOption(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         optionExists(option, fieldMap);
         return fieldMap.get(option);
     }
 
-    public String getOptionString(String option) throws PHPSerializedDataReaderExeption {
+    public String getOptionString(String option) throws PHPSerializedDataReaderException {
         return getOptionString(option, fieldMap);
     }
 
-    public String getOptionString(String[] options) throws PHPSerializedDataReaderExeption {
+    public String getOptionString(String[] options) throws PHPSerializedDataReaderException {
         return getOptionString(options[options.length - 1], getArray(options));
     }
 
-    private String getOptionString(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private String getOptionString(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         if (isOptionString(option, fieldMap)) return (String) getOption(option, fieldMap);
-        throw new PHPSerializedDataReaderExeption("Is not a String");
+        throw new PHPSerializedDataReaderException("Is not a String");
     }
 
-    public Boolean getOptionBoolean(String option) throws PHPSerializedDataReaderExeption {
+    public Boolean getOptionBoolean(String option) throws PHPSerializedDataReaderException {
         return getOptionBoolean(option, fieldMap);
     }
 
-    public Boolean getOptionBoolean(String[] options) throws PHPSerializedDataReaderExeption {
+    public Boolean getOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
         return getOptionBoolean(options[options.length - 1], getArray(options));
     }
 
-    private Boolean getOptionBoolean(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private Boolean getOptionBoolean(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         if (isOptionBoolean(option, fieldMap)) return (Boolean) getOption(option, fieldMap);
-        throw new PHPSerializedDataReaderExeption(("is not a boolean"));
+        throw new PHPSerializedDataReaderException(("is not a boolean"));
     }
 
-    public Map<String, Object> getOptionArray(String option) throws PHPSerializedDataReaderExeption {
+    public Map<String, Object> getOptionArray(String option) throws PHPSerializedDataReaderException {
         return getOptionArray(option, fieldMap);
     }
 
-    public Map<String, Object> getOptionArray(String[] options) throws PHPSerializedDataReaderExeption {
+    public Map<String, Object> getOptionArray(String[] options) throws PHPSerializedDataReaderException {
         return getOptionArray(options[options.length - 1], getArray(options));
     }
 
-    private Map<String, Object> getOptionArray(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    private Map<String, Object> getOptionArray(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         if (isOptionArray(option, fieldMap)) //noinspection unchecked
             return (Map<String, Object>) getOption(option, fieldMap);
-        throw new PHPSerializedDataReaderExeption("Is not an array");
+        throw new PHPSerializedDataReaderException("Is not an array");
     }
 
-    private boolean optionExists(String option) throws PHPSerializedDataReaderExeption {
-        return optionExists(option, fieldMap);
-    }
+// --Commented out by Inspection START (28-3-2020 12:59):
+//    private boolean optionExists(String option) throws PHPSerializedDataReaderException {
+//        return optionExists(option, fieldMap);
+//    }
+// --Commented out by Inspection STOP (28-3-2020 12:59)
 
-    private boolean optionExists(String[] options) throws PHPSerializedDataReaderExeption {
-        return optionExists(options[options.length - 1], getArray(options));
-    }
+// --Commented out by Inspection START (28-3-2020 12:59):
+//    private boolean optionExists(String[] options) throws PHPSerializedDataReaderException {
+//        return optionExists(options[options.length - 1], getArray(options));
+//    }
+// --Commented out by Inspection STOP (28-3-2020 12:59)
 
-    private boolean optionExists(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderExeption {
+    @SuppressWarnings("SameReturnValue")
+    private boolean optionExists(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         if (!fieldMap.containsKey(option)) {
-            throw new PHPSerializedDataReaderExeption("Option does not exist");
+            throw new PHPSerializedDataReaderException("Option does not exist");
         }
         return true;
     }
 
     private void fillArrayFieldStructure() {
         pointer = 0;
-        int endPointer = phpArraySerial.length();
         pointer++;//skip a
         pointer++; //skip :
         pointer++;//skip number
@@ -166,7 +170,7 @@ public class PHPSerializedDataReader {
         pointer++; //skip :
         pointer++; //skip {
         while (phpArraySerial.charAt(pointer) != '}') {
-            pointer++;//skip s fieldname identifier
+            pointer++;//skip s fieldName identifier
             String fieldName = getStringData();
             //start value field
             char type = phpArraySerial.charAt(pointer);
@@ -179,7 +183,6 @@ public class PHPSerializedDataReader {
                 fieldMap.put(fieldName, getArrayData());
             }
         }
-        return;
     }
 
     private Map<String, Object> getArrayData() {
@@ -200,7 +203,7 @@ public class PHPSerializedDataReader {
         pointer++; //skip {
         int numberFields = 0;
         while (numberFields < arrayLength) {
-            pointer++; //skip s fieldname identifier
+            pointer++; //skip s fieldName identifier
             fieldName = getStringData();
             char type = phpArraySerial.charAt(pointer);
             pointer++; //skip value identifier
@@ -240,7 +243,7 @@ public class PHPSerializedDataReader {
 
     private Boolean getBooleanData() {
         pointer++;//skip :
-        Boolean booleanData;
+        boolean booleanData;
         booleanData = phpArraySerial.charAt(pointer) != '0';
         pointer++;
         pointer++; //skip ;
