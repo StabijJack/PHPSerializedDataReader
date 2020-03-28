@@ -124,7 +124,6 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testIsOptionString() {
-        // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionString(new String[]{"smtp_settings", " pietje"}));
         try {
             assertTrue(phpSerializedDataReader.isOptionString(new String[]{"smtp_settings", "port"}));
@@ -135,7 +134,6 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testIsOptionBoolean() {
-        // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionBoolean(new String[]{"smtp_settings", " pietje"}));
         try {
             assertFalse(phpSerializedDataReader.isOptionBoolean(new String[]{"smtp_settings", "port"}));
@@ -146,7 +144,6 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testIsOptionArray() {
-        // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.isOptionArray(new String[]{"smtp_settings", " pietje"}));
         try {
             assertTrue(phpSerializedDataReader.isOptionArray(new String[]{"smtp_settings", "secret"}));
@@ -160,7 +157,6 @@ class PHPSerializedDataReaderTest {
         // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOption(new String[]{"smtp_settings", " pietje"}));
         try {
-            // noinspection SpellCheckingInspection
             assertEquals("presentmail.nl", phpSerializedDataReader.getOption(new String[]{"smtp_settings", "host"}));
             assertFalse((Boolean) phpSerializedDataReader.getOption(new String[]{"smtp_settings", "force_from_name_replace"}));
             @SuppressWarnings({"unchecked", "SpellCheckingInspection"}) Map<String, Object> array = (Map<String, Object>) phpSerializedDataReader.getOption(new String[]{"smtp_settings", "host"});
@@ -171,7 +167,6 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testGetOptionString() {
-        // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", " pietje"}));
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionString(new String[]{"smtp_settings", "force_from_name_replace"}));
         try {
@@ -182,7 +177,6 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testGetOptionBoolean() {
-        // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", " pietje"}));
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionBoolean(new String[]{"smtp_settings", "port"}));
         try {
@@ -193,7 +187,6 @@ class PHPSerializedDataReaderTest {
 
     @Test
     void testGetOptionArray() {
-        // noinspection SpellCheckingInspection
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", " pietje"}));
         assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionArray(new String[]{"smtp_settings", "port"}));
         try {
@@ -211,7 +204,6 @@ class PHPSerializedDataReaderTest {
     @Test
     void testIsOption() {
         assertTrue(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host"}));
-        // noinspection SpellCheckingInspection
         assertFalse(phpSerializedDataReader.isOption(new String[] {"smtp_settings","host","piet"}));
     }
 
@@ -235,5 +227,25 @@ class PHPSerializedDataReaderTest {
         } catch (PHPSerializedDataReaderException e) {
         }
 
+    }
+
+    @Test
+    void getOptionInteger() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionInteger("Present Alkmaar"));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionInteger("force_from_name_replace"));
+        try {
+            assertEquals(55246, phpSerializedDataReader.getOptionInteger("Integer"));
+        } catch (PHPSerializedDataReaderException e) {
+        }
+    }
+
+    @Test
+    void testGetOptionInteger() {
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionInteger(new String[]{"smtp_settings", " pietje"}));
+        assertThrows(PHPSerializedDataReaderException.class, () -> phpSerializedDataReader.getOptionInteger(new String[]{"smtp_settings", "force_from_name_replace"}));
+        try {
+            assertEquals("55246", phpSerializedDataReader.getOptionInteger(new String[]{"Integer"}));
+        } catch (PHPSerializedDataReaderException e) {
+        }
     }
 }

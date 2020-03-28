@@ -161,6 +161,21 @@ public class PHPSerializedDataReader {
             return (Map<String, Object>) getOption(option, fieldMap);
         throw new PHPSerializedDataReaderException("Is not an array");
     }
+    public Integer getOptionInteger(String option) throws PHPSerializedDataReaderException {
+        return getOptionInteger(option, fieldMap);
+    }
+
+    public Integer getOptionInteger(String[] options) throws PHPSerializedDataReaderException {
+        if (arrayWithOneElement(options))return getOptionInteger(options[0]);
+        return getOptionInteger(options[options.length - 1], getArray(options));
+    }
+
+    private Integer getOptionInteger(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
+        if (isOptionString(option, fieldMap)) return (Integer) getOption(option, fieldMap);
+        throw new PHPSerializedDataReaderException("Is not a String");
+    }
+
+
 
 // --Commented out by Inspection START (28-3-2020 12:59):
 //    private boolean optionExists(String option) throws PHPSerializedDataReaderException {
