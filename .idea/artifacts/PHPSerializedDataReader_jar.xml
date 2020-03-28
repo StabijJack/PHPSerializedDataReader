@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="PHPSerializedDataReader:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PHPSerializedDataReader_jar</output-path>
+    <root id="archive" name="PHPSerializedDataReader.jar">
+      <element id="module-output" name="PHPSerializedDataReader" />
+    </root>
+  </artifact>
+</component>
