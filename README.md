@@ -2,6 +2,8 @@
 DeSerialize PHPSerialized data to java Objects
 using definition on http://www.phpinternalsbook.com/php5/classes_objects/serialization.html 
 
+always starts with a:
+
  these **elements** are ready
  
  these ~~elements~~ not useful
@@ -30,3 +32,14 @@ implemented by storing integer as string namefield as below
 ~~internal reference a:2:{i:0;s:3:"foo";i:1;R:2;}~~
 
 ~~internal reference O:8:"stdClass":1:{s:3:"foo";r:1;}~~
+
+**_another option:_**
+
+example: {"name": "value","name":{"name":"value,"name":"value"}}
+
+structure: {nameValuePair, .....}
+
+nameValuePair is "name": value
+
+value is structure {...} or String between "..."
+escape is \ vooral voor "

@@ -3,9 +3,10 @@ package nl.famschneider.phpSerializedDataReader;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: 29-3-2020 test /" in structure strings
 public class PHPSerializedDataReader {
     private final StringBuilder phpArraySerial;
-    private final Map<String, Object> fieldMap;
+    private Map<String, Object> fieldMap;
     private Integer pointer;
 
     public PHPSerializedDataReader(String phpArraySerial) throws PHPSerializedDataReaderException {
@@ -252,24 +253,20 @@ public class PHPSerializedDataReader {
         return true;
     }
 
+
     private void fillArrayFieldStructure() throws PHPSerializedDataReaderException {
         pointer = 0;
-        if (phpArraySerial.charAt(pointer) != 'a') throw new ExceptionInInitializerError("not an Array as Base Field");
-        pointer++;//skip a
-        pointer++; //skip :
-        pointer++;//skip number
-        if (phpArraySerial.charAt(pointer) >= '0' && phpArraySerial.charAt(pointer) <= '9') pointer++;
-        if (phpArraySerial.charAt(pointer) >= '0' && phpArraySerial.charAt(pointer) <= '9') pointer++;
-        pointer++; //skip :
-        pointer++; //skip {
-        while (phpArraySerial.charAt(pointer) != '}') {
-            NameValuePair nameValuePair = handleSequenceOfFields();
-            fieldMap.put((String) nameValuePair.Name, nameValuePair.Value);
-        }
+        if (phpArraySerial.charAt(pointer) == 'a') {
+            pointer++;//skip a
+            fieldMap = getArrayData();
+        } else if (phpArraySerial.charAt(pointer) == '{') {
+            fieldMap = new HashMap<>();
+            fieldMap.put("root", getArrayStructure());
+        } else throw new ExceptionInInitializerError("not an SerializedPHPArray or ArrayStructure");
     }
 
     private Map<String, Object> getArrayData() throws PHPSerializedDataReaderException {
-        Map<String, Object> fieldNames = new HashMap<>();
+        Map<String, Object> fieldMap = new HashMap<>();
         pointer++; //skip :
         int arrayLength = Character.getNumericValue(phpArraySerial.charAt(pointer));
         pointer++;
@@ -286,11 +283,11 @@ public class PHPSerializedDataReader {
         int numberFields = 0;
         while (numberFields < arrayLength) {
             NameValuePair nameValuePair = handleSequenceOfFields();
-            fieldNames.put((String) nameValuePair.Name, nameValuePair.Value);
+            fieldMap.put((String) nameValuePair.name, nameValuePair.value);
             numberFields++;
         }
         pointer++;//skip }
-        return fieldNames;
+        return fieldMap;
     }
 
     private String getStringData() {
@@ -381,18 +378,55 @@ public class PHPSerializedDataReader {
         throw new PHPSerializedDataReaderException("not implemented type: " + type);
     }
 
+    private  Map<String, Object> getArrayStructure() {
+        Map<String, Object> fieldMap = new HashMap<>();
+        pointer++; //skip {
+        while(phpArraySerial.charAt(pointer)!= '}'){
+            NameValuePair nameValuePair = getNameValuePair();
+            fieldMap.put(nameValuePair.name,nameValuePair.value);
+            if(phpArraySerial.charAt(pointer)==',') pointer++; //skip ,
+        }
+        pointer++; //skip }
+        return fieldMap;
+    }
+
+    private NameValuePair getNameValuePair() {
+        String fieldName = getString();
+        pointer++; //skip :
+        if (phpArraySerial.charAt(pointer) == '"') {
+            return new NameValuePair(fieldName, getString());
+        } else {
+            return new NameValuePair(fieldName, getArrayStructure());
+        }
+    }
+
+    private String getString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        pointer++; //skip "
+        while (phpArraySerial.charAt(pointer) != '"') {
+            if (phpArraySerial.charAt(pointer) == '\\') {
+                pointer++; //skip \
+            }
+            stringBuilder.append(phpArraySerial.charAt(pointer));
+            pointer++;
+        }
+        pointer++; //skip "
+        return stringBuilder.toString();
+    }
+
     private Boolean arrayWithOneElement(String[] options) {
         return options.length == 1;
     }
 }
 
-class NameValuePair {
-    final Object Name;
-    final Object Value;
 
-    public NameValuePair(Object name, Object value) {
-        Name = name;
-        Value = value;
+class NameValuePair {
+    final String name;
+    final Object value;
+
+    public NameValuePair(String name, Object value) {
+        this.name = name;
+        this.value = value;
     }
 }
 

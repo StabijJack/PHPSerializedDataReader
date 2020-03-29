@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings({"CatchMayIgnoreException", "SpellCheckingInspection"})
 class PHPSerializedDataReaderTest {
     private PHPSerializedDataReader phpSerializedDataReader;
+    private PHPSerializedDataReader phpArrayStructure;
+
 
     @BeforeEach
     void setUp() {
@@ -39,6 +41,8 @@ class PHPSerializedDataReaderTest {
                 "}";
         try {
             phpSerializedDataReader = new PHPSerializedDataReader(s);
+            phpArrayStructure = new PHPSerializedDataReader("{\"fi\\\"eld1\":\"fiel\\\"d1Data\",\"array1\":{\"af1\":\"af1data\",\"af2\":\"af2data\"}}");
+//            phpArrayStructure = new PHPSerializedDataReader("{\"fie\\\"ld1\":\"field\\\"1Data\"}");
         } catch (PHPSerializedDataReaderException e) {
             System.out.println(e.getMessage());
         }
@@ -47,7 +51,9 @@ class PHPSerializedDataReaderTest {
     @Test
     void getFieldMap() {
         Map<String, Object> fieldMap = phpSerializedDataReader.getFieldMap();
+        Map<String, Object> fieldMap2 = phpArrayStructure.getFieldMap();
         assertTrue(fieldMap instanceof HashMap);
+        assertTrue(fieldMap2 instanceof HashMap);
     }
 
     @Test
