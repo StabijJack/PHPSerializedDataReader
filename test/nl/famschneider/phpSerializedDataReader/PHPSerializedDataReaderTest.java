@@ -41,8 +41,8 @@ class PHPSerializedDataReaderTest {
                 "}";
         try {
             phpSerializedDataReader = new PHPSerializedDataReader(s);
-            phpArrayStructure = new PHPSerializedDataReader("{\"fi\\\"eld1\":\"fiel\\\"d1Data\",\"array1\":{\"af1\":\"af1data\",\"af2\":\"af2data\"}}");
-//            phpArrayStructure = new PHPSerializedDataReader("{\"fie\\\"ld1\":\"field\\\"1Data\"}");
+//            phpArrayStructure = new PHPSerializedDataReader("{\"fi\\\"eld1\"=\"fiel\\\"d1Data\",\"array1\"={\"af1\"=true,\"af2\"=null},\"raarveld\"=kdkdknf}");
+            phpArrayStructure = new PHPSerializedDataReader("{\"array1\"={\"array2\"={\"array3\"=null}}}");
         } catch (PHPSerializedDataReaderException e) {
             System.out.println(e.getMessage());
         }
@@ -339,5 +339,30 @@ class PHPSerializedDataReaderTest {
             assertNull(phpSerializedDataReader.getOptionNull(new String[]{"Null"}));
         } catch (PHPSerializedDataReaderException e) {
         }
+    }
+
+    @Test
+    void testToString() {
+
+        System.out.println(phpArrayStructure.toString());
+        System.out.println(phpSerializedDataReader.toString());
+    }
+
+    @Test
+    void getOptionNamesTopLevel() {
+        System.out.println(phpSerializedDataReader.getOptionNamesTopLevel());
+        System.out.println(phpArrayStructure.getOptionNamesTopLevel());
+    }
+
+    @Test
+    void getOptionNamesOf() {
+
+        System.out.println(phpSerializedDataReader.getOptionNamesOf("smtp_settings"));
+    }
+
+    @Test
+    void testGetOptionNamesOf() {
+
+        System.out.println(phpArrayStructure.getOptionNamesOf(new String[]{"root","array1","array2","array3"}));
     }
 }

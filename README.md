@@ -21,7 +21,7 @@ always starts with a:
 **"foobar":     s:6:"foobar";**
 
 **"[10, 11, 12]:"    "a:3:{i:0;i:10;i:1;i:11;i:2;i:12;}"**
-implemented by storing integer as string namefield as below
+implemented by storing integer as string name field as below
 
 **["foo" => "aaa", "bar" => false]:     a:2:{s:3:"foo";s:3:"aaa";s:3:"bar";b:0}**
 
@@ -41,5 +41,6 @@ structure: {nameValuePair, .....}
 
 nameValuePair is "name": value
 
-value is structure {...} or String between "..."
-escape is \ vooral voor "
+value is structure {...} or String between "..." or null or true or false or an id
+escape is \ before "
+

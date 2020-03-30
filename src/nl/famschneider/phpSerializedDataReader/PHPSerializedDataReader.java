@@ -1,9 +1,11 @@
 package nl.famschneider.phpSerializedDataReader;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-// TODO: 29-3-2020 test /" in structure strings
+// TODO: 29-3-2020  traverse array  
 public class PHPSerializedDataReader {
     private final StringBuilder phpArraySerial;
     private Map<String, Object> fieldMap;
@@ -26,6 +28,31 @@ public class PHPSerializedDataReader {
             fieldMap = getOptionArray(options[i], fieldMap);
         }
         return fieldMap;
+    }
+
+    public Set<String> getOptionNamesTopLevel() {
+        return fieldMap.keySet();
+    }
+
+    public Set<String> getOptionNamesOf(String groupName) {
+        return getOptionNamesOf(groupName, fieldMap);
+    }
+
+    public Set<String> getOptionNamesOf(String[] options) {
+        if (arrayWithOneElement(options)) return getOptionNamesOf(options[0]);
+        try {
+            return getOptionNamesOf(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException ignored) {
+        }
+        return new HashSet<>();
+    }
+
+    private Set<String> getOptionNamesOf(String groupName, Map<String, Object> fieldMap) {
+        try {
+            return getOptionArray(groupName, fieldMap).keySet();
+        } catch (PHPSerializedDataReaderException ignored) {
+        }
+        return new HashSet<>();
     }
 
     public boolean isOption(String option) {
@@ -253,7 +280,6 @@ public class PHPSerializedDataReader {
         return true;
     }
 
-
     private void fillArrayFieldStructure() throws PHPSerializedDataReaderException {
         pointer = 0;
         if (phpArraySerial.charAt(pointer) == 'a') {
@@ -283,7 +309,7 @@ public class PHPSerializedDataReader {
         int numberFields = 0;
         while (numberFields < arrayLength) {
             NameValuePair nameValuePair = handleSequenceOfFields();
-            fieldMap.put((String) nameValuePair.name, nameValuePair.value);
+            fieldMap.put(nameValuePair.name, nameValuePair.value);
             numberFields++;
         }
         pointer++;//skip }
@@ -378,13 +404,13 @@ public class PHPSerializedDataReader {
         throw new PHPSerializedDataReaderException("not implemented type: " + type);
     }
 
-    private  Map<String, Object> getArrayStructure() {
+    private Map<String, Object> getArrayStructure() {
         Map<String, Object> fieldMap = new HashMap<>();
         pointer++; //skip {
-        while(phpArraySerial.charAt(pointer)!= '}'){
+        while (phpArraySerial.charAt(pointer) != '}') {
             NameValuePair nameValuePair = getNameValuePair();
-            fieldMap.put(nameValuePair.name,nameValuePair.value);
-            if(phpArraySerial.charAt(pointer)==',') pointer++; //skip ,
+            fieldMap.put(nameValuePair.name, nameValuePair.value);
+            if (phpArraySerial.charAt(pointer) == ',') pointer++; //skip ,
         }
         pointer++; //skip }
         return fieldMap;
@@ -392,30 +418,47 @@ public class PHPSerializedDataReader {
 
     private NameValuePair getNameValuePair() {
         String fieldName = getString();
-        pointer++; //skip :
-        if (phpArraySerial.charAt(pointer) == '"') {
-            return new NameValuePair(fieldName, getString());
-        } else {
+        pointer++; //skip =
+        if (phpArraySerial.charAt(pointer) == '{') {
             return new NameValuePair(fieldName, getArrayStructure());
+        } else {
+            return new NameValuePair(fieldName, getString());
         }
     }
 
     private String getString() {
         StringBuilder stringBuilder = new StringBuilder();
-        pointer++; //skip "
-        while (phpArraySerial.charAt(pointer) != '"') {
-            if (phpArraySerial.charAt(pointer) == '\\') {
-                pointer++; //skip \
+        if (phpArraySerial.charAt(pointer) == '"') {
+            pointer++; //skip "
+            while (phpArraySerial.charAt(pointer) != '"') {
+                if (phpArraySerial.charAt(pointer) == '\\') {
+                    pointer++; //skip \
+                }
+                stringBuilder.append(phpArraySerial.charAt(pointer));
+                pointer++;
             }
-            stringBuilder.append(phpArraySerial.charAt(pointer));
-            pointer++;
+            pointer++; //skip "
+            return stringBuilder.toString();
+        } else {
+            while (phpArraySerial.charAt(pointer) != ',' && phpArraySerial.charAt(pointer) != '}') {
+                stringBuilder.append(phpArraySerial.charAt(pointer));
+                pointer++;
+            }
+            if (phpArraySerial.charAt(pointer) == ',') pointer++;
+
+            return stringBuilder.toString();
         }
-        pointer++; //skip "
-        return stringBuilder.toString();
     }
 
     private Boolean arrayWithOneElement(String[] options) {
         return options.length == 1;
+    }
+
+    @Override
+    public String toString() {
+        return "PHPSerializedDataReader{" +
+                "fieldMap=" + fieldMap +
+                '}';
     }
 }
 
