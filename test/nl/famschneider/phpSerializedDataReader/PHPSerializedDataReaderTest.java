@@ -41,8 +41,8 @@ class PHPSerializedDataReaderTest {
                 "}";
         try {
             phpSerializedDataReader = new PHPSerializedDataReader(s);
-//            phpArrayStructure = new PHPSerializedDataReader("{\"fi\\\"eld1\"=\"fiel\\\"d1Data\",\"array1\"={\"af1\"=true,\"af2\"=null},\"raarveld\"=kdkdknf}");
-            phpArrayStructure = new PHPSerializedDataReader("{\"array1\"={\"array2\"={\"array3\"=null}}}");
+            phpArrayStructure = new PHPSerializedDataReader("{\"array1\"={\"array2\"={\"array3\"={\"valuefield\"=null}}}}");
+
         } catch (PHPSerializedDataReaderException e) {
             System.out.println(e.getMessage());
         }
@@ -54,6 +54,7 @@ class PHPSerializedDataReaderTest {
         Map<String, Object> fieldMap2 = phpArrayStructure.getFieldMap();
         assertTrue(fieldMap instanceof HashMap);
         assertTrue(fieldMap2 instanceof HashMap);
+        assertThrows(PHPSerializedDataReaderException.class,()-> new PHPSerializedDataReader("{\"array1\"={\"array2\"={\"array3\"={\"valuefield\"=null}}}")); //missing end });
     }
 
     @Test

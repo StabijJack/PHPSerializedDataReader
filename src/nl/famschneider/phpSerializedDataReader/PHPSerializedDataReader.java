@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: 29-3-2020  traverse array  
 public class PHPSerializedDataReader {
     private final StringBuilder phpArraySerial;
     private Map<String, Object> fieldMap;
@@ -97,7 +96,7 @@ public class PHPSerializedDataReader {
 
     public Boolean isOptionInteger(String[] options) throws PHPSerializedDataReaderException {
         if (arrayWithOneElement(options)) return isOptionInteger(options[0]);
-        return isOptionString(options[options.length - 1], getArray(options));
+        return isOptionInteger(options[options.length - 1], getArray(options));
     }
 
     private Boolean isOptionInteger(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -111,7 +110,7 @@ public class PHPSerializedDataReader {
 
     public Boolean isOptionDouble(String[] options) throws PHPSerializedDataReaderException {
         if (arrayWithOneElement(options)) return isOptionDouble(options[0]);
-        return isOptionString(options[options.length - 1], getArray(options));
+        return isOptionDouble(options[options.length - 1], getArray(options));
     }
 
     private Boolean isOptionDouble(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -125,7 +124,7 @@ public class PHPSerializedDataReader {
 
     public Boolean isOptionNull(String[] options) throws PHPSerializedDataReaderException {
         if (arrayWithOneElement(options)) return isOptionNull(options[0]);
-        return isOptionString(options[options.length - 1], getArray(options));
+        return isOptionNull(options[options.length - 1], getArray(options));
     }
 
     private Boolean isOptionNull(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -281,14 +280,18 @@ public class PHPSerializedDataReader {
     }
 
     private void fillArrayFieldStructure() throws PHPSerializedDataReaderException {
-        pointer = 0;
-        if (phpArraySerial.charAt(pointer) == 'a') {
-            pointer++;//skip a
-            fieldMap = getArrayData();
-        } else if (phpArraySerial.charAt(pointer) == '{') {
-            fieldMap = new HashMap<>();
-            fieldMap.put("root", getArrayStructure());
-        } else throw new ExceptionInInitializerError("not an SerializedPHPArray or ArrayStructure");
+        try {
+            pointer = 0;
+            if (phpArraySerial.charAt(pointer) == 'a') {
+                pointer++;//skip a
+                fieldMap = getArrayData();
+            } else if (phpArraySerial.charAt(pointer) == '{') {
+                fieldMap = new HashMap<>();
+                fieldMap.put("root", getArrayStructure());
+            } else throw new PHPSerializedDataReaderException("not an implemented SerializedPHPArray(starts with a) or ArrayStructure (starts with {)");
+        }catch (StringIndexOutOfBoundsException e){
+            throw new PHPSerializedDataReaderException("string is not properly formed");
+        }
     }
 
     private Map<String, Object> getArrayData() throws PHPSerializedDataReaderException {
