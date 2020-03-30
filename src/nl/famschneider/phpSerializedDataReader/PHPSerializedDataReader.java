@@ -76,27 +76,43 @@ public class PHPSerializedDataReader {
         return optionExists(option, fieldMap);
     }
 
-    public Boolean isOptionString(String option) throws PHPSerializedDataReaderException {
-        return isOptionString(option, fieldMap);
+    public Boolean isOptionString(String option) {
+        try {
+            return isOptionString(option, fieldMap);
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
-    public Boolean isOptionString(String[] options) throws PHPSerializedDataReaderException {
+    public Boolean isOptionString(String[] options) {
         if (arrayWithOneElement(options)) return isOptionString(options[0]);
-        return isOptionString(options[options.length - 1], getArray(options));
+        try {
+            return isOptionString(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
     private Boolean isOptionString(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         optionExists(option, fieldMap);
-        return getOption(option).getClass() == String.class;
+        return getOption(option,fieldMap).getClass() == String.class;
     }
 
-    public Boolean isOptionInteger(String option) throws PHPSerializedDataReaderException {
-        return isOptionInteger(option, fieldMap);
+    public Boolean isOptionInteger(String option) {
+        try {
+            return isOptionInteger(option, fieldMap);
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
-    public Boolean isOptionInteger(String[] options) throws PHPSerializedDataReaderException {
+    public Boolean isOptionInteger(String[] options) {
         if (arrayWithOneElement(options)) return isOptionInteger(options[0]);
-        return isOptionInteger(options[options.length - 1], getArray(options));
+        try {
+            return isOptionInteger(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
     private Boolean isOptionInteger(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -104,13 +120,21 @@ public class PHPSerializedDataReader {
         return getOption(option).getClass() == Integer.class;
     }
 
-    public Boolean isOptionDouble(String option) throws PHPSerializedDataReaderException {
-        return isOptionDouble(option, fieldMap);
+    public Boolean isOptionDouble(String option)  {
+        try {
+            return isOptionDouble(option, fieldMap);
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
-    public Boolean isOptionDouble(String[] options) throws PHPSerializedDataReaderException {
+    public Boolean isOptionDouble(String[] options) {
         if (arrayWithOneElement(options)) return isOptionDouble(options[0]);
-        return isOptionDouble(options[options.length - 1], getArray(options));
+        try {
+            return isOptionDouble(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
     private Boolean isOptionDouble(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -118,13 +142,21 @@ public class PHPSerializedDataReader {
         return getOption(option).getClass() == Double.class;
     }
 
-    public Boolean isOptionNull(String option) throws PHPSerializedDataReaderException {
-        return isOptionNull(option, fieldMap);
+    public Boolean isOptionNull(String option)  {
+        try {
+            return isOptionNull(option, fieldMap);
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
-    public Boolean isOptionNull(String[] options) throws PHPSerializedDataReaderException {
+    public Boolean isOptionNull(String[] options) {
         if (arrayWithOneElement(options)) return isOptionNull(options[0]);
-        return isOptionNull(options[options.length - 1], getArray(options));
+        try {
+            return isOptionNull(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
     private Boolean isOptionNull(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -132,13 +164,21 @@ public class PHPSerializedDataReader {
         return getOption(option) == null;
     }
 
-    public Boolean isOptionBoolean(String option) throws PHPSerializedDataReaderException {
-        return isOptionBoolean(option, fieldMap);
+    public Boolean isOptionBoolean(String option) {
+        try {
+            return isOptionBoolean(option, fieldMap);
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
-    public Boolean isOptionBoolean(String[] options) throws PHPSerializedDataReaderException {
+    public Boolean isOptionBoolean(String[] options) {
         if (arrayWithOneElement(options)) return isOptionBoolean(options[0]);
-        return isOptionBoolean(options[options.length - 1], getArray(options));
+        try {
+            return isOptionBoolean(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
     private Boolean isOptionBoolean(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -146,13 +186,21 @@ public class PHPSerializedDataReader {
         return getOption(option, fieldMap).getClass() == Boolean.class;
     }
 
-    public Boolean isOptionArray(String option) throws PHPSerializedDataReaderException {
-        return isOptionArray(option, fieldMap);
+    public Boolean isOptionArray(String option) {
+        try {
+            return isOptionArray(option, fieldMap);
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
-    public Boolean isOptionArray(String[] options) throws PHPSerializedDataReaderException {
+    public Boolean isOptionArray(String[] options) {
         if (arrayWithOneElement(options)) return isOptionArray(options[0]);
-        return isOptionArray(options[options.length - 1], getArray(options));
+        try {
+            return isOptionArray(options[options.length - 1], getArray(options));
+        } catch (PHPSerializedDataReaderException e) {
+            return false;
+        }
     }
 
     private Boolean isOptionArray(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
@@ -288,8 +336,9 @@ public class PHPSerializedDataReader {
             } else if (phpArraySerial.charAt(pointer) == '{') {
                 fieldMap = new HashMap<>();
                 fieldMap.put("root", getArrayStructure());
-            } else throw new PHPSerializedDataReaderException("not an implemented SerializedPHPArray(starts with a) or ArrayStructure (starts with {)");
-        }catch (StringIndexOutOfBoundsException e){
+            } else
+                throw new PHPSerializedDataReaderException("not an implemented SerializedPHPArray(starts with a) or ArrayStructure (starts with {)");
+        } catch (StringIndexOutOfBoundsException e) {
             throw new PHPSerializedDataReaderException("string is not properly formed");
         }
     }
