@@ -1,9 +1,6 @@
 package nl.famschneider.phpSerializedDataReader;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PHPSerializedDataReader {
     private final StringBuilder phpArraySerial;
@@ -95,7 +92,7 @@ public class PHPSerializedDataReader {
 
     private Boolean isOptionString(String option, Map<String, Object> fieldMap) throws PHPSerializedDataReaderException {
         optionExists(option, fieldMap);
-        return getOption(option,fieldMap).getClass() == String.class;
+        return getOption(option, fieldMap).getClass() == String.class;
     }
 
     public Boolean isOptionInteger(String option) {
@@ -120,7 +117,7 @@ public class PHPSerializedDataReader {
         return getOption(option).getClass() == Integer.class;
     }
 
-    public Boolean isOptionDouble(String option)  {
+    public Boolean isOptionDouble(String option) {
         try {
             return isOptionDouble(option, fieldMap);
         } catch (PHPSerializedDataReaderException e) {
@@ -142,7 +139,7 @@ public class PHPSerializedDataReader {
         return getOption(option).getClass() == Double.class;
     }
 
-    public Boolean isOptionNull(String option)  {
+    public Boolean isOptionNull(String option) {
         try {
             return isOptionNull(option, fieldMap);
         } catch (PHPSerializedDataReaderException e) {
@@ -482,6 +479,7 @@ public class PHPSerializedDataReader {
         StringBuilder stringBuilder = new StringBuilder();
         if (phpArraySerial.charAt(pointer) == '"') {
             pointer++; //skip "
+
             while (phpArraySerial.charAt(pointer) != '"') {
                 if (phpArraySerial.charAt(pointer) == '\\') {
                     pointer++; //skip \
@@ -490,16 +488,14 @@ public class PHPSerializedDataReader {
                 pointer++;
             }
             pointer++; //skip "
-            return stringBuilder.toString();
         } else {
             while (phpArraySerial.charAt(pointer) != ',' && phpArraySerial.charAt(pointer) != '}') {
                 stringBuilder.append(phpArraySerial.charAt(pointer));
                 pointer++;
             }
             if (phpArraySerial.charAt(pointer) == ',') pointer++;
-
-            return stringBuilder.toString();
         }
+        return stringBuilder.toString();
     }
 
     private Boolean arrayWithOneElement(String[] options) {
@@ -512,8 +508,77 @@ public class PHPSerializedDataReader {
                 "fieldMap=" + fieldMap +
                 '}';
     }
-}
 
+    public int arrayDepth() {
+        return arrayDepth(fieldMap);
+    }
+
+    @SuppressWarnings("unchecked")
+    private int arrayDepth(Map<String, Object> fieldMap) {
+        int depth = 1;
+        for (String key : fieldMap.keySet()) {
+            Object object = fieldMap.get(key);
+            if (object != null && object.getClass() == HashMap.class) {
+                depth += arrayDepth((Map<String, Object>) object);
+            }
+        }
+        return depth;
+    }
+
+    public int arrayWidth() {
+        return arrayWidth(fieldMap);
+    }
+
+    @SuppressWarnings("unchecked")
+    private int arrayWidth(Map<String, Object> fieldMap) {
+        int width = 0;
+        for (String key : fieldMap.keySet()) {
+            Object object = fieldMap.get(key);
+            if (object != null && object.getClass() == HashMap.class) {
+                width += arrayWidth((Map<String, Object>) object);
+            } else width++;
+        }
+        return width;
+    }
+
+    public List<List<String>> printableArray() {
+        List<List<String>> fieldArray = new ArrayList<>();
+        int depth = arrayDepth(fieldMap) + 1;//For valueRow
+        int width = arrayWidth(fieldMap);
+        for (int d = 0; d < depth; d++) {
+            List<String> row = new ArrayList<>();
+            for (int w = 0; w < width; w++) {
+                row.add("");
+            }
+            fieldArray.add(row);
+        }
+        fillFieldArray(fieldMap, fieldArray, new CurrentLocation());
+        return fieldArray;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void fillFieldArray(Map<String, Object> fieldMap, List<List<String>> fieldArray, CurrentLocation l) {
+        for (String key : fieldMap.keySet()) {
+            Object object = fieldMap.get(key);
+            if (object != null && object.getClass() == HashMap.class) {
+                System.out.println("row: " + l.row + " col: " + l.col + " key: " + key);
+                fieldArray.get(l.row).set(l.col, key);
+                l.row++;
+                fillFieldArray((Map<String, Object>) object, fieldArray, l);
+                l.row--;
+            } else {
+                fieldArray.get(l.row).set(l.col, key);
+                if (object != null) {
+                    fieldArray.get(fieldArray.size() - 1).set(l.col, object.toString());
+                } else {
+                    fieldArray.get(fieldArray.size() - 1).set(l.col, "null");
+                }
+                l.col++;
+            }
+
+        }
+    }
+}
 
 class NameValuePair {
     final String name;
@@ -523,6 +588,12 @@ class NameValuePair {
         this.name = name;
         this.value = value;
     }
+}
+
+class CurrentLocation {
+    int row;
+    int col;
+
 }
 
 

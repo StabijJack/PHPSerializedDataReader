@@ -315,4 +315,20 @@ class PHPSerializedDataReaderTest {
 
         assertArrayEquals( new String[]{"valuefield"},phpArrayStructure.getOptionNamesOf(new String[]{"root","array1","array2","array3"}).toArray());
     }
+
+    @Test
+    void arrayDepth() {
+        assertEquals(5, phpArrayStructure.arrayDepth());
+    }
+
+    @Test
+    void arrayWidth() {
+        assertEquals(1, phpArrayStructure.arrayWidth());
+    }
+
+    @Test
+    void printableArray() {
+
+        System.out.println(phpSerializedDataReader.printableArray());
+    }
 }
