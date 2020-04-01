@@ -3,6 +3,7 @@ package nl.famschneider.phpSerializedDataReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ class PHPSerializedDataReaderTest {
                 "s:7:\"Integer\";i:55246;" +
                 "s:6:\"Double\";d:55.246;" +
                 "s:4:\"Null\";N;" +
-                "s:15:\"from_name_field\";s:15:\"Present Alkmaar\";" +
+                "s:15:\"from_name_field\";s:17:\"Present\" Alkmaar\"\";" +
                 "s:13:\"smtp_settings\";a:8:{" +
                 "s:4:\"host\";s:14:\"presentmail.nl\";" +
                 "s:15:\"type_encryption\";s:3:\"tls\";" +
@@ -327,8 +328,12 @@ class PHPSerializedDataReaderTest {
     }
 
     @Test
-    void printableArray() {
+    void exportFieldMapToExcellCSVFile()  {
 
-        System.out.println(phpSerializedDataReader.printableArray());
+        try {
+            phpSerializedDataReader.exportFieldMapToExcelCSVFile("e:/downloads/report.csv");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

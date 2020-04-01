@@ -1,5 +1,6 @@
 package nl.famschneider.phpSerializedDataReader;
 
+import java.io.*;
 import java.util.*;
 
 public class PHPSerializedDataReader {
@@ -541,7 +542,7 @@ public class PHPSerializedDataReader {
         return width;
     }
 
-    public List<List<String>> printableArray() {
+    private List<List<String>> printableArray() {
         List<List<String>> fieldArray = new ArrayList<>();
         int depth = arrayDepth(fieldMap) + 1;//For valueRow
         int width = arrayWidth(fieldMap);
@@ -561,7 +562,6 @@ public class PHPSerializedDataReader {
         for (String key : fieldMap.keySet()) {
             Object object = fieldMap.get(key);
             if (object != null && object.getClass() == HashMap.class) {
-                System.out.println("row: " + l.row + " col: " + l.col + " key: " + key);
                 fieldArray.get(l.row).set(l.col, key);
                 l.row++;
                 fillFieldArray((Map<String, Object>) object, fieldArray, l);
@@ -575,6 +575,27 @@ public class PHPSerializedDataReader {
                 }
                 l.col++;
             }
+
+        }
+    }
+
+    public void exportFieldMapToExcelCSVFile(String path) throws FileNotFoundException {
+        FileOutputStream fileOutputStream = new FileOutputStream(path);
+        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream)) {
+            for (List<String> row : printableArray()) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String col : row) {
+                    stringBuilder.append("\"");
+                    String t = col.replaceAll("\"", "\"\"");//Excel must have two " to show "
+                    stringBuilder.append(t);
+                    stringBuilder.append("\";");
+                }
+                stringBuilder.deleteCharAt(stringBuilder.length()-1);
+                stringBuilder.append("\n");
+                outputStreamWriter.write(stringBuilder.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
 
         }
     }
