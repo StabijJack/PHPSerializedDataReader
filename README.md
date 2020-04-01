@@ -11,6 +11,7 @@
     <li>getoption.. methods correct object or throws error for existing options and for wrong object type</li>
     <li>isOption... returns true or false</li>
     <li>getOptionsNames.... return filled - or empty set</li>
+    <li>exportFieldMapToExcelCSVFile accepts String FileName</li>
 </ul>
 
 
